@@ -9,22 +9,27 @@ use think\Response;
 
 class Token
 {
-    public function index()
-    {
-        return 'hello wordK';
-    }
     public function checkToken($token)
     {
-        if (!$token) {
-            return  json('用户未登录', 401);
-        }
         $data = Db::table('user')
             ->where('token', $token)
             ->find();
-        if (time() - $data['token_time_out'] > 0 || $token != $data['token']) {
-            return json('用户登录状态已过期', 401);
+
+        if (time() - $data['token_time_out'] > 0 || $token !== $data['token']) {
+            return json('用户登录状态已过期', 403);
+            exit;
         }
-        return 'ok';
+
+
+
+
+        if (!$token) {
+            return  json('用户未登录', 401);
+            exit;
+        }
+
+
+        return 'done';
     }
 
     public function setToken($name)

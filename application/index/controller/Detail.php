@@ -14,6 +14,11 @@ class Detail extends Controller
 {
     public function add(Request $request)
     {
+        $model = new Token;
+        if ($model->checkToken($request->header('Authorization')) !== 'done') {
+            return $model->checkToken($request->header('Authorization'));
+        }
+
         $data = $request->post();
 
         // 获取用户token
@@ -80,15 +85,15 @@ class Detail extends Controller
                 ->where('detail_id', $item['id'])
                 ->count();
 
-            if ($item['images']) {
-                $item['images'] = explode("##", $item['images']);
-                $newImages = [];
-                foreach ($item['images'] as $key => $image) {
 
-                    array_push($newImages, Config::get('BaseURL') . 'detail-images/' . $image);
-                }
-                $item['images'] = array_slice($newImages, 0, 3);
+            $item['images'] = $item['images'] ? explode("##", $item['images']) : [];
+            $newImages = [];
+            foreach ($item['images'] as $key => $image) {
+
+                array_push($newImages, Config::get('BaseURL') . 'detail-images/' . $image);
             }
+            $item['images'] = array_slice($newImages, 0, 3);
+
             array_push($newData, $item);
         }
         return json($newData, 200);
@@ -96,15 +101,18 @@ class Detail extends Controller
 
     public function like(Request $request)
     {
+        $model = new Token;
+        if ($model->checkToken($request->header('Authorization')) !== 'done') {
+            return $model->checkToken($request->header('Authorization'));
+        }
+
         $detail_id = $request->get('id');
         $userToken = $request->header('Authorization');
         $user_id = Db::table('user')
             ->where('token', $userToken)
             ->value('id');
 
-        if (!$user_id) {
-            return json("当前用户未登录")->code(401);
-        }
+
 
         $like_str = Db::table('detail')
             ->where('id', $detail_id)

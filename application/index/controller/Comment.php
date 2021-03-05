@@ -13,6 +13,11 @@ class Comment extends Controller
 {
     public function add(Request $request)
     {
+        $model = new Token;
+        if ($model->checkToken($request->header('Authorization')) !== 'done') {
+            return $model->checkToken($request->header('Authorization'));
+        }
+
         $data = $request->post();
         $userToken = $request->header('Authorization');
         $data['user_id'] = Db::table('user')
@@ -105,15 +110,17 @@ class Comment extends Controller
 
     public function like(Request $request)
     {
+        $model = new Token;
+        if ($model->checkToken($request->header('Authorization')) !== 'done') {
+            return $model->checkToken($request->header('Authorization'));
+        }
+
         $req = $request->post();
         $userToken = $request->header('Authorization');
         $userID = Db::table('user')
             ->where('token', $userToken)
             ->value('id');
 
-        if (!$userID) {
-            return json("当前用户未登录")->code(401);
-        }
 
         $like_str = Db::table('comment')
             ->where('id', $req['parent_id'])
@@ -139,6 +146,11 @@ class Comment extends Controller
 
     public function reply(Request $request)
     {
+        $model = new Token;
+        if ($model->checkToken($request->header('Authorization')) !== 'done') {
+            return $model->checkToken($request->header('Authorization'));
+        }
+
         $req = $request->post();
         $req['comment_id'];
         $req['reply_id'];

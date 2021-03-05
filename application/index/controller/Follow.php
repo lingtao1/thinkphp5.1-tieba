@@ -14,6 +14,11 @@ class User
 {
     public function getFollowList(Request $request)
     {
+        $model = new Token;
+        if ($model->checkToken($request->header('Authorization')) !== 'done') {
+            return $model->checkToken($request->header('Authorization'));
+        }
+
         $uid =  Db::table('user')
             ->where('token', $request->header('Authorization'))
             ->value('id');

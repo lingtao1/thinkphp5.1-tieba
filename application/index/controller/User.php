@@ -21,24 +21,25 @@ class User
     {
         // 用户个人信息
         $model = new Token;
-        // return json($request->header('Authorization'));
-        if ($request->header('Authorization') == 'null') {
-            return response()->code(200);
-        }
-        if ($model->checkToken($request->header('Authorization')) != 'ok') {
+        if ($model->checkToken($request->header('Authorization')) !== 'done') {
             return $model->checkToken($request->header('Authorization'));
         }
+
 
         $data = Db::table('user')
             ->where('token', $request->header('Authorization'))
             ->field('id,name,image,sex')
             ->find();
-        $data['image'] = Config::get('BaseURL') . 'user-images/' . $data['image'];
+        $data && $data['image'] = Config::get('BaseURL') . 'user-images/' . $data['image'];
+
         return json($data);
     }
 
     public function getUserInfo(Request $request)
     {
+
+
+
         // 用户个人信息
         $id = $request->get('id');
 
@@ -65,8 +66,6 @@ class User
 
     public function login(Request $request)
     {
-        // return json($request->header('Authorization'));
-
         // 获取用户信息
         $data = Db::table('user')
             ->where('name', $request->post('username'))
@@ -104,6 +103,11 @@ class User
 
     public function getUserinfoEdit(Request $request)
     {
+        $model = new Token;
+        if ($model->checkToken($request->header('Authorization')) !== 'done') {
+            return $model->checkToken($request->header('Authorization'));
+        }
+
         $userToken = $request->header('Authorization');
 
         $res = Db::table('user')
@@ -116,6 +120,11 @@ class User
 
     public function channgeUserSex(Request $request)
     {
+        $model = new Token;
+        if ($model->checkToken($request->header('Authorization')) !== 'done') {
+            return $model->checkToken($request->header('Authorization'));
+        }
+
         $req = $request->post();
 
         $req['sex'];
@@ -127,6 +136,10 @@ class User
 
     public function updateUserImage(Request $request)
     {
+        $model = new Token;
+        if ($model->checkToken($request->header('Authorization')) !== 'done') {
+            return $model->checkToken($request->header('Authorization'));
+        }
 
         $file = $request->file('image');
         if ($file) {
@@ -138,7 +151,7 @@ class User
             ->where('token', $request->header('Authorization'))
             ->value('image');
 
-        if ($image != 'detault.jpg' && file_exists('../public/user-images/' . $image)) {
+        if ($image != 'detault.jpg' && file_exists('../public/user-images/' . $image && $image)) {
             unlink('../public/user-images/' . $image);
         }
 

@@ -143,6 +143,6 @@ return [
     // 异常处理handle类 留空使用 \think\exception\Handle
     'exception_handle'       => '',
 
-    'BaseURL'                   => 'http://localhost/tp/public/',
+    'BaseURL'                   => 'http://120.25.212.190:81/tp/public/',
 
 ];

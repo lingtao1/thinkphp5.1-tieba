@@ -11,19 +11,20 @@ use think\File;
 
 class Channel extends Controller
 {
-    public function index()
-    {
-        return $this->fetch();
-    }
 
     public function add(Request $request)
     {
+        $model = new Token;
+        if ($model->checkToken($request->header('Authorization')) !== 'done') {
+            return $model->checkToken($request->header('Authorization'));
+        }
+
         $data = $request->post();
         $exist = Db::table('channel')
             ->where('name', $data['name'] . '吧')
             ->find();
 
-        if (count($exist) > 0) {
+        if ($exist) {
             return json('已存在此吧', 401);
         }
 
@@ -82,7 +83,7 @@ class Channel extends Controller
             ->find();
 
 
-        if ($request->header('Authorization') !== 'null') {
+        if ($request->header('Authorization')) {
 
             $history = new History;
 
@@ -112,6 +113,11 @@ class Channel extends Controller
 
     public function followChannel(Request $request)
     {
+        $model = new Token;
+        if ($model->checkToken($request->header('Authorization')) !== 'done') {
+            return $model->checkToken($request->header('Authorization'));
+        }
+
         $uid = Db::table('user')
             ->where('token', $request->header('Authorization'))
             ->value('id');

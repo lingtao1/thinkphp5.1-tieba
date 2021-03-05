@@ -34,6 +34,10 @@ class History
 
     public function getHistory(Request $request)
     {
+        $model = new Token;
+        if ($model->checkToken($request->header('Authorization')) !== 'done') {
+            return $model->checkToken($request->header('Authorization'));
+        }
         // return  $request->header('Authorization');
         $uid = Db::table('user')
             ->where('token', $request->header('Authorization'))
@@ -57,6 +61,10 @@ class History
 
     public function deteleHistory(Request $request)
     {
+        $model = new Token;
+        if ($model->checkToken($request->header('Authorization')) !== 'done') {
+            return $model->checkToken($request->header('Authorization'));
+        }
         $id = $request->post('id');
         Db::table('history')->where('id', $id)->delete();
         return json('ok');

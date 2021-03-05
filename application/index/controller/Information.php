@@ -13,6 +13,12 @@ class  Information
 
     public function getInformationList(Request $request)
     {
+
+        $model = new Token;
+        if ($model->checkToken($request->header('Authorization')) !== 'done') {
+            return $model->checkToken($request->header('Authorization'));
+        }
+
         $userToken = $request->header('Authorization');
         $req = $request->get();
         $user = Db::table('user')
